@@ -1,7 +1,10 @@
+from urllib.parse import urlparse
+
 from mcp.server.auth.provider import AccessToken
 from fastmcp.server.auth.providers.in_memory import InMemoryOAuthProvider
 from fastmcp.server.auth.auth import ClientRegistrationOptions
 from pydantic import AnyHttpUrl
+from starlette.routing import Route
 
 from .config import Config
 
@@ -23,6 +26,32 @@ class CanvasOAuthProvider(InMemoryOAuthProvider):
             ),
             required_scopes=["read"],
         )
+
+    def get_routes(self, mcp_path: str | None = None) -> list:
+        routes = super().get_routes(mcp_path)
+
+        # Fix: FastMCP registers /.well-known/oauth-authorization-server but
+        # RFC 8414 path-aware discovery requires it at
+        # /.well-known/oauth-authorization-server{issuer_path} when the issuer
+        # URL has a path component (e.g. /canvas). Add the path-aware route.
+        if self.issuer_url:
+            issuer_path = urlparse(str(self.issuer_url)).path.rstrip("/")
+            if issuer_path and issuer_path != "/":
+                for route in list(routes):
+                    if (
+                        isinstance(route, Route)
+                        and route.path == "/.well-known/oauth-authorization-server"
+                    ):
+                        routes.append(
+                            Route(
+                                f"/.well-known/oauth-authorization-server{issuer_path}",
+                                endpoint=route.endpoint,
+                                methods=route.methods,
+                            )
+                        )
+                        break
+
+        return routes
 
     async def verify_token(self, token: str) -> AccessToken | None:
         # First, check if it's a valid OAuth-issued token
