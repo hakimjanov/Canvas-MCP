@@ -5,7 +5,7 @@ from mcp.client.sse import sse_client
 from mcp.client.session import ClientSession
 from src.config import Config
 
-SERVER_URL = "http://localhost:2222/canvas/"
+SERVER_URL = "http://localhost:2222/mcp"
 
 async def safe_call_tool(session, tool_name, arguments):
     print(f"\n--- Testing {tool_name} ({arguments}) ---")

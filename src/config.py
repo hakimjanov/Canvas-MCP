@@ -20,4 +20,4 @@ class Config:
     MCP_SERVER_TOKEN = os.getenv("MCP_SERVER_TOKEN", "test-token")
 
     # Public base URL where this MCP server is hosted (used for OAuth discovery)
-    MCP_BASE_URL = os.getenv("MCP_BASE_URL", "https://textdonna.com")
+    MCP_BASE_URL = os.getenv("MCP_BASE_URL", "https://textdonna.com/canvas")
