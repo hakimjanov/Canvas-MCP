@@ -12,4 +12,5 @@ services:
       - CANVAS_BASE_URL=${CANVAS_BASE_URL}
       - CANVAS_TOKEN=${CANVAS_TOKEN}
       - MCP_SERVER_TOKEN=${MCP_SERVER_TOKEN}
+      - MCP_BASE_URL=${MCP_BASE_URL}
     restart: unless-stopped
